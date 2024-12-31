@@ -89,7 +89,7 @@ class PushoverAPI(object):
         return resp_body
 
     def _send_message(self, user, message, device=None, title=None, url=None, url_title=None, image=None,
-                      priority=None, retry=None, expire=None, callback_url=None, timestamp=None, sound=None, html=False,
+                      priority=None, retry=None, expire=None, ttl=None, callback_url=None, timestamp=None, sound=None, html=False,
                       session=None):
         """The internal function used to send messages via the Pushover API.
         Takes a ``session`` parameter to use for sending HTTP requests, allowing the re-use of sessions to decrease overhead.
@@ -106,6 +106,7 @@ class PushoverAPI(object):
         :param priority: An integer representing the priority of the message, from -2 (least important) to 2 (emergency). Default is 0.
         :param retry: How often the Pushover server will re-send an emergency-priority message in seconds. Required with priority 2 messages.
         :param expire: How long an emergency-priority message will be re-sent for in seconds
+        :param ttl: How long a message will live before being deleted automatically in seconds
         :param callback_url: A url to be visited by the Pushover servers upon acknowledgement of an emergency-priority message
         :param timestamp: A Unix timestamp of the message's date and time to be displayed instead of the time the message is received by the Pushover servers
         :param sound: A string representing a sound to be played with the message instead of the user's default
@@ -121,6 +122,7 @@ class PushoverAPI(object):
         :type priority: int
         :type retry: int
         :type expire: int
+        :type ttl: int
         :type callback_url: str
         :type timestamp: int
         :type sound: str
@@ -140,6 +142,7 @@ class PushoverAPI(object):
             'priority': priority,
             'retry': retry,
             'expire': expire,
+            'ttl': ttl,
             'callback': callback_url,
             'timestamp': timestamp,
             'sound': sound,
@@ -160,7 +163,7 @@ class PushoverAPI(object):
         return self._generic_post('messages.json', payload=payload, session=session)
 
     def send_message(self, user, message, device=None, title=None, url=None, url_title=None, image=None,
-                     priority=None, retry=None, expire=None, callback_url=None, timestamp=None, sound=None, html=False):
+                     priority=None, retry=None, expire=None, ttl=None, callback_url=None, timestamp=None, sound=None, html=False):
         """Send a message via the Pushover API.
 
         :param user: A Pushover user token representing the user or group to whom the message will be sent
@@ -173,6 +176,7 @@ class PushoverAPI(object):
         :param priority: An integer representing the priority of the message, from -2 (least important) to 2 (emergency). Default is 0.
         :param retry: How often the Pushover server will re-send an emergency-priority message in seconds. Required with priority 2 messages.
         :param expire: How long an emergency-priority message will be re-sent for in seconds
+        :param ttl: How long a message will live before being deleted automatically in seconds
         :param callback_url: A url to be visited by the Pushover servers upon acknowledgement of an emergency-priority message
         :param timestamp: A Unix timestamp of the message's date and time to be displayed instead of the time the message is received by the Pushover servers
         :param sound: A string representing the sound to be played with the message instead of the user's default. Available sounds can be retreived using :meth:`PushoverAPI.get_sounds`.
@@ -187,6 +191,7 @@ class PushoverAPI(object):
         :type priority: int
         :type retry: int
         :type expire: int
+        :type ttl: int
         :type callback_url: str
         :type timestamp: int
         :type sound: str
@@ -196,7 +201,7 @@ class PushoverAPI(object):
         :rtype: dict
         """
         return self._send_message(user, message, device, title, url, url_title, image, priority, retry, expire,
-                                  callback_url, timestamp, sound, html)
+                                  ttl, callback_url, timestamp, sound, html)
 
     def send_messages(self, messages):
         """Send multiple messages with one call. Utilizes a single HTTP session to decrease overhead.
